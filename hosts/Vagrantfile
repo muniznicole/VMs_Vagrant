@@ -1,0 +1,52 @@
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+
+  #IP DHCP = 192.168.33.1
+  #IP DNS = 192.168.33.2
+  #IP DHCP = 192.168.33.3
+
+Vagrant.configure("2") do |config|
+
+  # Configuração do host 1 utilizando o DHCP
+  config.vm.define "host1" do |host1|
+    host1.vm.box = "hashicorp/bionic64"
+    host1.vm.network "private_network", type: "dhcp" #alteração do ip estático para utilizar o dhcp
+
+    host1.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.cpus = 2
+    end
+
+    config.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      sudo apt-get install -y curl
+      apt-get install -y nginx
+      echo "Olá maquina 1" | sudo tee /var/www/html/index.html
+    SHELL
+
+  end
+  
+  # Configuração do host 2 utilizando o DHCP
+  config.vm.define "host2" do |host2|
+    host2.vm.box = "hashicorp/bionic64"
+    host2.vm.network "private_network", type: "dhcp" #alteração do ip estático para utilizar o dhcp
+
+    host2.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.cpus = 2
+    end
+
+    config.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      sudo apt-get install -y curl
+      apt-get install -y nginx
+      echo "Olá maquina 2" | sudo tee /var/www/html/index.html
+    SHELL
+
+  end
+
+end

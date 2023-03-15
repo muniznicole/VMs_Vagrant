@@ -1,0 +1,29 @@
+Vagrant.configure("2") do |config|
+  
+  # Criando o servidor DHCP
+  config.vm.define "dhcpserver" do |dhcpserver|
+    
+    #definindo o sistema operacional e o dendereço de IP da máquina
+    dhcpserver.vm.box = "hashicorp/bionic64"
+    dhcpserver.vm.network "private_network", ip: "192.168.33.1"
+    
+    #Parametros de configuração da máquina
+    dhcpserver.vm.provision "shell", inline: <<-SHELL
+      #instalação do servidor dhcp
+      sudo apt-get update
+      sudo apt-get install -y isc-dhcp-server
+      sudo sed -i 's/INTERFACESv4=""/INTERFACESv4="enp0s8"/g' /etc/default/isc-dhcp-server
+      sudo systemctl restart isc-dhcp-server
+      #Mascara de sub rede
+      sudo sh -c "echo 'subnet 192.168.33.0 netmask 255.255.255.0 {' > /etc/dhcp/dhcpd.conf"
+      #Quantidade de IPs liberados
+      sudo sh -c "echo '  range 192.168.33.100 192.168.33.200;' >> /etc/dhcp/dhcpd.conf"
+      sudo sh -c "echo '  option routers 192.168.33.1;' >> /etc/dhcp/dhcpd.conf"
+      #IP do server DNS
+      sudo sh -c "echo '  option domain-name-servers 192.168.33.2;' >> /etc/dhcp/dhcpd.conf"
+      sudo sh -c "echo '}' >> /etc/dhcp/dhcpd.conf"
+    SHELL
+
+  end
+
+end

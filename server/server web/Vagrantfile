@@ -1,0 +1,18 @@
+Vagrant.configure("2") do |config|
+  
+  # Criando o servidor web
+  config.vm.define "webserver" do |webserver|
+
+    webserver.vm.box = "hashicorp/bionic64"
+    webserver.vm.network "private_network", ip: "192.168.33.3"
+      
+    webserver.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update
+      sudo apt-get install -y curl
+      sudo apt-get install -y nginx #servidor web
+      echo "Oi testando aqui!" | sudo tee /var/www/html/index.html
+    SHELL
+  
+  end
+
+end
